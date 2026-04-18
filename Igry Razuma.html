@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Игры Разума — Курс</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@tailwindcss/browser@4.1.7/dist/index.global.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --panel: #121826;
+    --panel-2: #1a2033;
+    --line: #232a3d;
+    --ink: #e6e9f2;
+    --ink-dim: #a3a9bd;
+    --ink-mute: #6b7293;
+    --violet: #a78bfa;
+    --violet-deep: #7c3aed;
+    --amber: #fbbf24;
+    --mint: #86efac;
+    --rose: #fca5a5;
+  }
+  html, body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+  .font-serif { font-family: 'Instrument Serif', serif; font-weight: 400; letter-spacing: -0.01em; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .bg-bg { background: var(--bg); }
+  .bg-panel { background: var(--panel); }
+  .bg-panel-2 { background: var(--panel-2); }
+  .border-line { border-color: var(--line); }
+  .text-ink { color: var(--ink); }
+  .text-dim { color: var(--ink-dim); }
+  .text-mute { color: var(--ink-mute); }
+  .text-violet { color: var(--violet); }
+  .text-amber { color: var(--amber); }
+  .bg-violet { background: var(--violet); }
+  .bg-violet-deep { background: var(--violet-deep); }
+  .border-violet { border-color: var(--violet); }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #2a3150; border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a4370; }
+
+  /* Noise / grain overlay */
+  .grain::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.035 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.5; mix-blend-mode: overlay;
+  }
+
+  /* Module enter */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+  .enter { animation: fadeUp 420ms cubic-bezier(.2,.7,.2,1) both; }
+
+  /* Subtle gradient halo */
+  .halo {
+    background: radial-gradient(600px 300px at 20% 0%, rgba(167,139,250,0.18), transparent 60%),
+                radial-gradient(500px 260px at 90% 110%, rgba(251,191,36,0.08), transparent 60%);
+  }
+
+  /* Dotted divider */
+  .dotline { background-image: radial-gradient(circle, #2b3350 1px, transparent 1.2px); background-size: 8px 8px; }
+
+  /* Checkbox custom */
+  .chk { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid #3a4268; display:inline-flex; align-items:center; justify-content:center; transition: all .2s; flex-shrink: 0; }
+  .chk[data-on="true"] { background: var(--violet); border-color: var(--violet); }
+
+  /* Focus ring */
+  input:focus, textarea:focus, button:focus { outline: none; }
+  .focus-ring:focus { box-shadow: 0 0 0 2px var(--violet-deep); }
+
+  /* Tag */
+  .tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Keycap */
+  .kc { font-family: 'JetBrains Mono', monospace; font-size: 10px; padding: 2px 6px; border: 1px solid #2b3350; border-bottom-width:2px; border-radius: 4px; color: var(--ink-dim); background: #0f1526; }
+
+  /* Module gradient cards */
+  .mod-card { background: linear-gradient(180deg, rgba(167,139,250,0.04), rgba(167,139,250,0)); }
+
+  /* Scale-in */
+  .pop { animation: pop .3s ease-out; }
+  @keyframes pop { from { opacity: 0; transform: scale(.96);} to { opacity: 1; transform: scale(1);} }
+
+  /* Sidebar mobile */
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; inset: 0 auto 0 0; width: 300px; z-index: 50; transform: translateX(-100%); transition: transform .3s; }
+    .sidebar.open { transform: translateX(0); }
+    .main-shift { margin-left: 0 !important; }
+  }
+
+  /* Progress ring */
+  .ring-track { stroke: #232a3d; }
+  .ring-fill { stroke: var(--violet); transition: stroke-dashoffset .6s cubic-bezier(.2,.7,.2,1); }
+
+  /* Hover lift */
+  .lift { transition: transform .25s, border-color .25s, background .25s; }
+  .lift:hover { transform: translateY(-2px); }
+
+  /* Subtle striped placeholder */
+  .stripes { background-image: repeating-linear-gradient(45deg, rgba(167,139,250,0.08) 0 8px, transparent 8px 16px); }
+
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+</style>
+</head>
+<body class="grain">
+<template id="__bundler_thumbnail" data-bg-color="#0b0a13">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0b0a13"/>
+    <circle cx="600" cy="400" r="220" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0.5"/>
+    <circle cx="600" cy="400" r="150" fill="none" stroke="#fbbf24" stroke-width="2" opacity="0.7"/>
+    <circle cx="600" cy="400" r="80" fill="#a78bfa" opacity="0.2"/>
+    <text x="600" y="420" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="64" fill="#fbbf24">Игры Разума</text>
+    <text x="600" y="470" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#a1a1aa" letter-spacing="4">КУРС · 10 МОДУЛЕЙ</text>
+  </svg>
+</template>
+<div id="app"></div>
+<script type="text/babel" src="data.js"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="modules.jsx"></script>
+<script type="text/babel" src="modules2.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+</body>
+</html>
